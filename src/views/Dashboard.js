@@ -68,9 +68,9 @@ function Dashboard() {
       <>
         <div className="content">
           hi
-          {/* <GauchesList gauches={userData.gauches} onRefresh={refreshData}/> */}
-          {/* <GraphCard graph={userData.graphs.Temperature} onRefresh={refreshData}/> */}
-          {/* <GraphCard graph={userData.graphs.Humidity} onRefresh={refreshData}/> */}
+          <GauchesList gauches={userData.gauches} onRefresh={refreshData}/>
+          <GraphCard graph={userData.graphs.Temperature} onRefresh={refreshData}/>
+          <GraphCard graph={userData.graphs.Humidity} onRefresh={refreshData}/>
           {/* <Row>
             <Col md="6">
               <Card>
