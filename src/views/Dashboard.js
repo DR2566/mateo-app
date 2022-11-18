@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 // react plugin used to create charts
 import { Line, Pie, Doughnut } from "react-chartjs-2";
 // reactstrap components
@@ -23,27 +23,18 @@ import './Dashboard.css';
 import GauchesList from '../variables/gauch/GauchesList';
 import GraphCard from "variables/graphs/GraphCard";
 
+import Loading from "components/Loading/Loading";
+
 
 function Dashboard() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [userData, setUserData] = useState({});
-
-  const refreshData2 = async () =>{
-    setIsLoaded(false);
-    const actualizedData = await refreshDataChart();
-    let gauches = actualizedData[0];
-    let graphs = actualizedData[1];
-    let data = {graphs, gauches};
-    // console.log(data);
-    setUserData(prev=>data);
-    setIsLoaded(true);
-  }
+  const [data, setData] = useState({});
 
   const refreshData = () =>{
     setIsLoaded(false);
     refreshDataChart()
       .then((data)=>{
-        setUserData(prev=>data);
+        setData(prev=>data);
         setIsLoaded(true);
       })
   }
@@ -54,22 +45,15 @@ function Dashboard() {
 
   if(!isLoaded){
     return(
-      <div className="content">
-        <h3 style={{textAlign: "center"}}>loading...</h3>
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      </div>
+      <Loading/>
     )
   }else{
     return (
       <>
         <div className="content">
-          <GauchesList gauches={userData.gauches} onRefresh={refreshData}/>
-          <GraphCard graph={userData.graphs.Temperature} onRefresh={refreshData}/>
-          <GraphCard graph={userData.graphs.Humidity} onRefresh={refreshData}/>
+          <GauchesList gauches={data.gauches} onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Temperature} onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Humidity} onRefresh={refreshData}/>
           {/* <Row>
             <Col md="6">
               <Card>
@@ -79,8 +63,8 @@ function Dashboard() {
                 </CardHeader>
                 <CardBody style={{ height: "266px" }}>
                   <Pie
-                    data={userData.graphs.emailGraph.data}
-                    options={userData.graphs.emailGraph.options}
+                    data={data.graphs.emailGraph.data}
+                    options={data.graphs.emailGraph.options}
                   />
                 </CardBody>
                 <CardFooter>
@@ -105,8 +89,8 @@ function Dashboard() {
                 </CardHeader>
                 <CardBody>
                   <Line
-                    data={userData.graphs.NASDAQgraph.data}
-                    options={userData.graphs.NASDAQgraph.options}
+                    data={data.graphs.NASDAQgraph.data}
+                    options={data.graphs.NASDAQgraph.options}
                     width={2}
                     height={1}
                   />

@@ -263,7 +263,6 @@ const refreshDataChart = () => {
   return(prom);
 }
 
-// BUG FOR LOADING HUMIDITY DATA !!!!!!!!!!!!!!
 const setCurrentValues = (dataList, sensor) =>{
   let currentValue;
   let selectedGauch = gauches[sensor];

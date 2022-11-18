@@ -1,13 +1,39 @@
 import React from 'react';
 import GraphCard from 'variables/graphs/GraphCard';
-// import {graphs} from '../variables'
+import { useState, useEffect } from 'react';
+import Loading from 'components/Loading/Loading';
+import { refreshDataChart } from 'variables/charts';
 
 const Temperature = () => {
-  return (
-    <div className='content'>
-      {/* <GraphCard graph={}/> */}
-    </div>
-  );
+  const [data, setData] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const refreshData = () =>{
+    setIsLoaded(false);
+    refreshDataChart()
+      .then((data)=>{
+        setData(prev=>data);
+        setIsLoaded(true);
+      })
+  }
+
+  useEffect(() => {
+    refreshData();
+  }, []);
+
+
+
+  if(!isLoaded){
+    return(
+      <Loading/>      
+    )
+  }else{
+    return (
+      <div className='content'>
+        <GraphCard graph={data.graphs.Temperature} onRefresh={refreshData}/>
+      </div>
+    );
+  }
 }
 
 export default Temperature;
