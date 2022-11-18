@@ -232,7 +232,7 @@ const graphs = {
 
 const getData = (sensor) => {
   const prom = new Promise((resolve, reject)=>{
-    axios.get('http://192.168.0.115:3333/'+sensor)
+    axios.get('http://localhost:3333/'+sensor)
       .then((res)=>{
         return resolve(res.data);
       })
