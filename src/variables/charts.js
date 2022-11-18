@@ -71,11 +71,12 @@ const gauches = { //these are the semi-circle graphs
 
 const graphs = {
   Temperature: { //temperature in a graph
+    name: sensors[0],
     data: {
       labels: [],
       datasets: [
         {
-          label: 'Dataset 1',
+          label: sensors[0],
           data: [],
           borderColor: 'orange',
           backgroundColor: "orange",
@@ -84,7 +85,6 @@ const graphs = {
     },
     options: {
       type: 'line',
-      data: sensors[0],
       options: {
         responsive: true,
         plugins: {
@@ -100,11 +100,12 @@ const graphs = {
     }
   },
   Humidity: { //Humidity in a graph
+    name: sensors[1],
     data: {
-      // labels: ['a','b','c','d'],
+      labels: [],
       datasets: [
         {
-          label: 'Dataset 1',
+          label: sensors[1],
           data: [],
           borderColor: 'orange',
           backgroundColor: "orange",
