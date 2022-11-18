@@ -233,7 +233,7 @@ const graphs = {
 
 const getData = (sensor) => {
   const prom = new Promise((resolve, reject)=>{
-    axios.get('http://localhost:3333/'+sensor)
+    axios.get('http://172.20.1.18:3333/'+sensor)
       .then((res)=>{
         return resolve(res.data);
       })
@@ -267,7 +267,7 @@ const setCurrentValues = (dataList, sensor) =>{
   let currentValue;
   let selectedGauch = gauches[sensor];
   currentValue = dataList[dataList.length-1].value; //the last measured time
-  selectedGauch.data.datasets[0].data = [currentValue, 100]; // we want to have the half of the semi-circle value for the average value  => for examle 21 degrees celsius from 42 deg (range)
+  selectedGauch.data.datasets[0].data = [currentValue, 100-currentValue]; // we want to have the half of the semi-circle value for the average value  => for examle 21 degrees celsius from 42 deg (range)
 }
 const setLongtimeValues = (dataList, sensor)=>{
   graphs[sensor].data.datasets[0].data = dataList.map((data)=>data.value);
