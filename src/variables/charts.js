@@ -5,7 +5,8 @@ export const sensors = ['Temperature', 'Humidity'];
 const gauches = { //these are the semi-circle graphs
   Temperature: { // current temperature 
     unit: "°C",
-    range: 42,
+    range: 43,
+    currentValue: 0,//this value will be actualized while the refreshing process
     data: {
       labels: ["Red"],
       datasets: [
@@ -38,6 +39,7 @@ const gauches = { //these are the semi-circle graphs
   Humidity: { // current humidity 
     unit: "%",
     range: 100,
+    currentValue: 0,//this value will be actualized while the refreshing process
     data: {
       labels: ["Red"],
       datasets: [
@@ -267,7 +269,9 @@ const setCurrentValues = (dataList, sensor) =>{
   let currentValue;
   let selectedGauch = gauches[sensor];
   currentValue = dataList[dataList.length-1].value; //the last measured time
-  selectedGauch.data.datasets[0].data = [currentValue, 100-currentValue]; // we want to have the half of the semi-circle value for the average value  => for examle 21 degrees celsius from 42 deg (range)
+  let ratioCurrentValue = (100*currentValue)/(selectedGauch.range);
+  selectedGauch.currentValue = currentValue;
+  selectedGauch.data.datasets[0].data = [ratioCurrentValue, 100-ratioCurrentValue]; // we want to have the half of the semi-circle value for the average value  => for examle 21 degrees celsius from 42 deg (range)
 }
 const setLongtimeValues = (dataList, sensor)=>{
   graphs[sensor].data.datasets[0].data = dataList.map((data)=>data.value);

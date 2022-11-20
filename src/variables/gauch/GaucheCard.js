@@ -29,7 +29,7 @@ const GaucheCard = (props) => {
               <Doughnut data={props.gauch.data} options={props.gauch.options} className="gauch-graph"></Doughnut>        
             </Col>
             <Col lg="12" md="12" sm="12" xs="12" className="gauch-value">
-              <p>{props.gauch.data.datasets[0].data[0]}{props.gauch.unit}</p>
+              <p>{props.gauch.currentValue}{props.gauch.unit}</p>
             </Col>
           </Row>
         </CardBody>
