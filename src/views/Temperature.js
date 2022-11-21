@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Loading from 'components/Loading/Loading';
 import { refreshDataChart } from 'variables/charts';
 
+
 const Temperature = () => {
   const [data, setData] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
@@ -29,8 +30,8 @@ const Temperature = () => {
     )
   }else{
     return (
-      <div className='content'>
-        <GraphCard graph={data.graphs.Temperature} onRefresh={refreshData}/>
+      <div className='content'>      
+        <GraphCard graph={data.graphs.Temperature} graphRange='multi' onRefresh={refreshData}/>
       </div>
     );
   }

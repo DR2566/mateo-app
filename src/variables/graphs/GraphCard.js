@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 // react plugin used to create charts
 import { Line, Pie, Doughnut } from "react-chartjs-2";
 // reactstrap components
@@ -16,15 +17,19 @@ import {
 import {
   sensors
 } from "variables/charts.js";
+import DatePicker from 'variables/DatePicker/DatePicker';
 
 const GraphCard = (props) => {
-  // console.log(props.graph);
+  const [valideTimeStamps, setValideTimeStamps] = useState([]);
   const graph = {...props.graph};
   const allDates = [...graph.data.labels];
 
   const lastMeasureDay =  allDates[allDates.length-1].slice(8, 10);
   const lastMeasureHour =  allDates[allDates.length-1].slice(11, 13);
   const lastMeasureTimeStamp = allDates[allDates.length-1];
+  allDates.map(date=>{
+    console.log(date);
+  })
 
   const getYesterday = () => { // gets the yesterday's day and hour
     let yesterdayDay = false;
@@ -45,35 +50,50 @@ const GraphCard = (props) => {
   }
 
   const getValideTimeStamp = (selectedValues) => { //gets the valide timeStamp that is written in the Database due the selected time and day
-    const [selectedDay, selectedHour] = selectedValues;
-
-    let selectedTimeStamp;
+    let selectedDay = selectedValues[0];
+    let selectedHour = selectedValues[1];
+    // console.log(selectedValues);
+    let selectedTimeStamp = false;
 
     for(let i=allDates.length-1;i>=0;i--){
       let day = allDates[i].slice(8, 10);
-      if(day === selectedDay){
+      console.log(day, selectedDay);
+      if(day == selectedDay){
+        console.log('df');
         let hour = allDates[i].slice(11, 13);
-        if(hour === selectedHour){
+        console.log(hour);
+        if(hour == selectedHour){
+          console.log('lll');
           selectedTimeStamp = allDates[i];
         }
       }
     }
+    console.log(selectedTimeStamp, selectedDay, selectedHour);
     return selectedTimeStamp;
   }
 
-  const chooseValuesTimeRange = (START, STOP) => { // choose only the selecteed time interval 
-    // console.log(START);
-    // console.log(STOP);
-    const startIndex = allDates.indexOf(START);
-    const stopIndex = allDates.indexOf(STOP);
-    graph.data.labels = graph.data.labels.slice(startIndex, stopIndex+1);
-    graph.data.datasets[0].data = graph.data.datasets[0].data.slice(startIndex, stopIndex+1); //slice wants to have one more stopping index
-  }
+  const chooseValuesTimeRange = (start, stop) => { // choose only the selecteed time interval 
+    console.log(start, stop);
+    if(!!start && !!stop){
+      const startIndex = allDates.indexOf(start);
+      const stopIndex = allDates.indexOf(stop);
+      graph.data.labels = graph.data.labels.slice(startIndex, stopIndex+1);
+      graph.data.datasets[0].data = graph.data.datasets[0].data.slice(startIndex, stopIndex+1); //slice wants to have one more stopping index
+      setValideTimeStamps({});      
+    }
+  } // PROBLEM WITH GIVING REFERENCE OF ALLDATES, BECAUSE IT IS CROPPED OUT AND THEN THERE ARE NO VALUES THERE !!!!!
 
-  if(props.graphRange === '24hours'){
-    const valideTimeStampSTART = getValideTimeStamp(getYesterday());
-    const valideTimeStampSTOP = lastMeasureTimeStamp;
-    chooseValuesTimeRange(valideTimeStampSTART, valideTimeStampSTOP);    
+  useEffect(() => {
+    const start = getValideTimeStamp(getYesterday());
+    const stop = lastMeasureTimeStamp;
+    chooseValuesTimeRange(start, stop);
+  }, []);
+
+  const pickerHandler = (e) => {
+    const START = getValideTimeStamp([String(e[0].getDate()).padStart(2, "0"), String(e[0].getHours()).padStart(2, "0")]);
+    const STOP = getValideTimeStamp([String(e[1].getDate()).padStart(2, "0"), String(e[1].getHours()).padStart(2, "0")]);
+    console.log(START, STOP);
+    chooseValuesTimeRange(START, STOP);
   }
 
   return (
@@ -96,6 +116,10 @@ const GraphCard = (props) => {
             <hr />
             <div className="stats">
               {/* <i className="fa fa-history" /> Updated 3 minutes ago */}
+              {(props.graphRange ==='multi')
+                ? <DatePicker onChange={pickerHandler}/>
+                : null
+              }
             </div>
           </CardFooter>
         </Card>
