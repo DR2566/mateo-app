@@ -2,7 +2,7 @@
   "name": "mateo",
   "version": "1.3.0",
   "private": true,
-  "homepage": "http://172.20.1.18:3000",
+  "homepage": "http://letka-g.ml:3000/",
   "dependencies": {
     "@babel/core": "7.18.6",
     "@ionic/react": "^6.3.6",
@@ -20,8 +20,7 @@
     "react-router-dom": "5.2.0",
     "react-scripts": "5.0.1",
     "reactstrap": "8.7.1",
-    "sass": "1.53.0",
-    "serve": "13.0.2"
+    "sass": "1.53.0"
   },
   "scripts": {
     "start": "react-scripts start",

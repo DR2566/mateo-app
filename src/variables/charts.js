@@ -235,7 +235,7 @@ const graphs = {
 
 const getData = (sensor) => {
   const prom = new Promise((resolve, reject)=>{
-    axios.get('http://172.20.1.18:3333/'+sensor)
+    axios.get('http://letka-g.ml:3333/'+sensor)
       .then((res)=>{
         return resolve(res.data);
       })
