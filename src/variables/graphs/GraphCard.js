@@ -20,82 +20,92 @@ import {
 import DatePicker from 'variables/DatePicker/DatePicker';
 
 const GraphCard = (props) => {
-  const [valideTimeStamps, setValideTimeStamps] = useState([]);
-  const graph = {...props.graph};
-  const allDates = [...graph.data.labels];
+  const [currentGraph, setCurrentGraph] = useState({... props.graph});
 
-  const lastMeasureDay =  allDates[allDates.length-1].slice(8, 10);
-  const lastMeasureHour =  allDates[allDates.length-1].slice(11, 13);
-  const lastMeasureTimeStamp = allDates[allDates.length-1];
-  allDates.map(date=>{
-    console.log(date);
-  })
 
-  const getYesterday = () => { // gets the yesterday's day and hour
-    let yesterdayDay = false;
-    let yesterdayHour = lastMeasureHour;
+  const get24Hours = () => { // gets the yesterday's timeStamp
+    let today = new Date();
+    let yesterday = new Date(today.getTime());
+    yesterday.setDate(today.getDate() - 1);
 
-    for(let i=allDates.length-1;i>=0;i--){
-      let date = allDates[i].slice(8, 10);
-      if(lastMeasureDay !== date){
-        yesterdayDay = date;
-        break;
-      }
-    }
-    if(!yesterdayDay){
-      yesterdayDay = lastMeasureDay;
-      yesterdayHour = '0';
-    }
-    return [yesterdayDay, yesterdayHour];
+    let dateYest = String(yesterday.getFullYear())+'-'+String((yesterday.getMonth()+1)).padStart(2, "0")+'-'+String(yesterday.getDate()).padStart(2, "0");
+    let timeYest = String(yesterday.getHours()).padStart(2, "0") + ":" + String(yesterday.getMinutes()).padStart(2, "0") + ":" + String(yesterday.getSeconds()).padStart(2, "0");
+    let timeStampYest = dateYest +';'+timeYest;
+
+    let dateToday = String(today.getFullYear())+'-'+String((today.getMonth()+1)).padStart(2, "0")+'-'+String(today.getDate()).padStart(2, "0");
+    let timeToday = String(today.getHours()).padStart(2, "0") + ":" + String(today.getMinutes()).padStart(2, "0") + ":" + String(today.getSeconds()).padStart(2, "0");
+    let timeStampToday = dateToday +';'+timeToday;
+
+    return [timeStampYest, timeStampToday];
   }
-
-  const getValideTimeStamp = (selectedValues) => { //gets the valide timeStamp that is written in the Database due the selected time and day
-    let selectedDay = selectedValues[0];
-    let selectedHour = selectedValues[1];
-    // console.log(selectedValues);
-    let selectedTimeStamp = false;
-
-    for(let i=allDates.length-1;i>=0;i--){
-      let day = allDates[i].slice(8, 10);
-      console.log(day, selectedDay);
-      if(day == selectedDay){
-        console.log('df');
-        let hour = allDates[i].slice(11, 13);
-        console.log(hour);
-        if(hour == selectedHour){
-          console.log('lll');
-          selectedTimeStamp = allDates[i];
+  const getLabelList = ([start, stop]) =>{ // these are the timeStamps of the time interval
+    let timeIntervalList = [];
+    let currentHour = new Date(stop);
+    for(let i=24; i>=0;i--){
+      timeIntervalList.push(currentHour.getTime());   
+      // console.log(currentHour);
+      currentHour.setTime(currentHour.getTime()-1*60*60*1000);
+    } 
+    return timeIntervalList;
+  }
+  const getDataList = (timeIntervalList) => {
+    let timeCodes = currentGraph.data.labels.map((measure)=>{
+      measure = new Date(measure);
+      return measure.getTime();
+    });
+    let choosedValuesTime = [];
+    for(let i=0;i<timeIntervalList.length-1;i++){
+      let start = timeIntervalList[i+1];
+      let stop = timeIntervalList[i];
+      choosedValuesTime.push([])
+      for(let b=0;b<timeCodes.length;b++){
+        if(timeCodes[b]>=start && timeCodes[b]<=stop){
+          choosedValuesTime[i].push(timeCodes[b]);
         }
       }
     }
-    console.log(selectedTimeStamp, selectedDay, selectedHour);
-    return selectedTimeStamp;
+    // // MAKE AN AVERAGES OF EACH HOUR
+    let dataList=[];
+    choosedValuesTime.map(lis=>{
+      let hourValue = 0;
+      lis.map(time=>{
+        if(time){
+          let value = props.graph.data.datasets[0].data[timeCodes.indexOf(time)];
+          hourValue+=value;
+        }
+      })
+      let avg = hourValue / lis.length;
+      dataList.push([avg]);
+      
+    })
+    return dataList;
+  }
+  const croppGraphData = (timeIntervalList, dataList) => {
+    timeIntervalList = timeIntervalList.slice(0, timeIntervalList.length-1);
+    console.log(timeIntervalList, dataList);
+    setCurrentGraph(prev=>{
+      prev.data.datasets[0].data = dataList.map(hour=>{return hour[0]});
+      let clearedLabels = timeIntervalList.map(intDate=>{
+        let date = new Date(intDate);
+        return date.getHours();
+      })
+      prev.data.labels = clearedLabels.map(label=>label);
+      // console.log(clearedLabels);
+      return prev;
+    })
   }
 
-  const chooseValuesTimeRange = (start, stop) => { // choose only the selecteed time interval 
-    console.log(start, stop);
-    if(!!start && !!stop){
-      const startIndex = allDates.indexOf(start);
-      const stopIndex = allDates.indexOf(stop);
-      graph.data.labels = graph.data.labels.slice(startIndex, stopIndex+1);
-      graph.data.datasets[0].data = graph.data.datasets[0].data.slice(startIndex, stopIndex+1); //slice wants to have one more stopping index
-      setValideTimeStamps({});      
-    }
-  } // PROBLEM WITH GIVING REFERENCE OF ALLDATES, BECAUSE IT IS CROPPED OUT AND THEN THERE ARE NO VALUES THERE !!!!!
-
   useEffect(() => {
-    const start = getValideTimeStamp(getYesterday());
-    const stop = lastMeasureTimeStamp;
-    chooseValuesTimeRange(start, stop);
+    const [start, stop] = get24Hours();
+    let timeIntervalList = getLabelList([start, stop]);
+    let dataList = getDataList(timeIntervalList);
+    croppGraphData(timeIntervalList, dataList);
   }, []);
 
   const pickerHandler = (e) => {
-    const START = getValideTimeStamp([String(e[0].getDate()).padStart(2, "0"), String(e[0].getHours()).padStart(2, "0")]);
-    const STOP = getValideTimeStamp([String(e[1].getDate()).padStart(2, "0"), String(e[1].getHours()).padStart(2, "0")]);
-    console.log(START, STOP);
-    chooseValuesTimeRange(START, STOP);
+    console.log('pressed');
   }
-
+  console.log(currentGraph);
   return (
     <Row>
       <Col md="12">
@@ -106,8 +116,8 @@ const GraphCard = (props) => {
           </CardHeader>
           <CardBody>
             <Line
-              data={graph.data}
-              options={graph.options}
+              data={currentGraph.data}
+              options={currentGraph.options}
               width={2}
               height={1}
             />
