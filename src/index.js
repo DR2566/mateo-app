@@ -19,10 +19,8 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-    <DataContextProvider>
         <Switch>
           <Route path="/" render={(props) => <AdminLayout {...props} />} />
         </Switch>      
-    </DataContextProvider>
   </BrowserRouter>
 );
