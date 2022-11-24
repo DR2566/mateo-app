@@ -22,6 +22,15 @@ import DatePicker from 'variables/DatePicker/DatePicker';
 const GraphCard = (props) => {
   const [currentGraph, setCurrentGraph] = useState({... props.graph});
 
+  const timeCodes = props.graph.data.labels.map((measure)=>{ //these codes won't be changed
+    measure = new Date(measure);
+    return measure.getTime();
+  });
+
+  const eraseData = () => {
+    changeDataGraph(get24Hours()[0],get24Hours()[1]);
+  }
+
 
   const get24Hours = () => { // gets the yesterday's timeStamp
     let today = new Date();
@@ -40,19 +49,16 @@ const GraphCard = (props) => {
   }
   const getLabelList = ([start, stop]) =>{ // these are the timeStamps of the time interval
     let timeIntervalList = [];
-    let currentHour = new Date(stop);
-    for(let i=24; i>=0;i--){
-      timeIntervalList.push(currentHour.getTime());   
-      // console.log(currentHour);
-      currentHour.setTime(currentHour.getTime()-1*60*60*1000);
+    let startHour = new Date(start);
+    let stopHour = new Date(stop);
+    let hoursDifference = Math.floor((stopHour-startHour)/(1000*3600));
+    for(let i=hoursDifference; i>=0;i--){
+      timeIntervalList.push(stopHour.getTime());   
+      stopHour.setTime(stopHour.getTime()-1*60*60*1000);
     } 
     return timeIntervalList;
   }
   const getDataList = (timeIntervalList) => {
-    let timeCodes = currentGraph.data.labels.map((measure)=>{
-      measure = new Date(measure);
-      return measure.getTime();
-    });
     let choosedValuesTime = [];
     for(let i=0;i<timeIntervalList.length-1;i++){
       let start = timeIntervalList[i+1];
@@ -64,7 +70,7 @@ const GraphCard = (props) => {
         }
       }
     }
-    // // MAKE AN AVERAGES OF EACH HOUR
+    // MAKE AN AVERAGES OF EACH HOUR
     let dataList=[];
     choosedValuesTime.map(lis=>{
       let hourValue = 0;
@@ -81,38 +87,57 @@ const GraphCard = (props) => {
     return dataList;
   }
   const croppGraphData = (timeIntervalList, dataList) => {
-    timeIntervalList = timeIntervalList.slice(0, timeIntervalList.length-1);
-    console.log(timeIntervalList, dataList);
+    timeIntervalList = timeIntervalList.slice(0, timeIntervalList.length-1).reverse();
+    dataList = dataList.reverse();
+    let clearedLabels = timeIntervalList.map(intDate=>{
+      let date = new Date(intDate);
+      let hour = String(date.getHours());
+      let day = String(date.getDate());
+      let month = String(date.getMonth()+1);
+      return day +'.'+ month +'; '+ hour;
+    });
+    clearedLabels = clearedLabels.map(label=>label);
+    let data = dataList.map(hour=>{return hour[0]})
     setCurrentGraph(prev=>{
-      prev.data.datasets[0].data = dataList.map(hour=>{return hour[0]});
-      let clearedLabels = timeIntervalList.map(intDate=>{
-        let date = new Date(intDate);
-        return date.getHours();
-      })
-      prev.data.labels = clearedLabels.map(label=>label);
-      // console.log(clearedLabels);
-      return prev;
-    })
+      return {
+        ...prev,
+        data: {
+          labels: clearedLabels,
+          datasets: [
+            {
+              ...prev.data.datasets[0],
+              data: data,
+              borderColor: 'orange',
+              backgroundColor: "orange",
+            }
+          ]
+        },
+      }
+    });
+  }
+  const changeDataGraph = (timeStampStart, timeStampStop) => {
+    let timeIntervalList = getLabelList([timeStampStart, timeStampStop]);
+    let dataList = getDataList(timeIntervalList);    
+    croppGraphData(timeIntervalList, dataList);
   }
 
   useEffect(() => {
     const [start, stop] = get24Hours();
-    let timeIntervalList = getLabelList([start, stop]);
-    let dataList = getDataList(timeIntervalList);
-    croppGraphData(timeIntervalList, dataList);
+    changeDataGraph(start, stop);
   }, []);
 
   const pickerHandler = (e) => {
-    console.log('pressed');
+    if(e.length === 2){
+      changeDataGraph(e[0], e[1]);
+    }
   }
-  console.log(currentGraph);
   return (
     <Row>
       <Col md="12">
         <Card>
           <CardHeader>
             <CardTitle tag="h5">{props.graph.name}</CardTitle>
-            <p className="card-category">24 Hours performance</p>
+            <p className="card-category">{props.graphRange}</p>
           </CardHeader>
           <CardBody>
             <Line
@@ -125,9 +150,8 @@ const GraphCard = (props) => {
           <CardFooter>
             <hr />
             <div className="stats">
-              {/* <i className="fa fa-history" /> Updated 3 minutes ago */}
-              {(props.graphRange ==='multi')
-                ? <DatePicker onChange={pickerHandler}/>
+              {(props.graphRange !=='24hours')
+                ? <DatePicker onErase={eraseData} onChange={pickerHandler}/>
                 : null
               }
             </div>

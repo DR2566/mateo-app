@@ -15,8 +15,6 @@ import '@ionic/react/css/core.css';
 import AdminLayout from "layouts/Admin.js";
 import { IonApp } from "@ionic/react";
 
-import DataContextProvider from './variables/data/dataContext';
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

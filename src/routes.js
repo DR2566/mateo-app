@@ -1,6 +1,7 @@
 import Dashboard from "views/Dashboard.js";
 import Icons from "views/Icons.js";
 import Temperature from "views/Temperature";
+import Humidity from "views/Humidity";
 
 
 var routes = [
@@ -15,6 +16,12 @@ var routes = [
     name: "Temperature",
     icon: "nc-icon nc-chart-bar-32",
     component: Temperature,
+  },
+  {
+    path: "/humidity",
+    name: "Humidity",
+    icon: "nc-icon nc-chart-bar-32",
+    component: Humidity,
   },
   {
     path: "/icons",

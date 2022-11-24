@@ -31,7 +31,7 @@ const Temperature = () => {
   }else{
     return (
       <div className='content'>      
-        <GraphCard graph={data.graphs.Temperature} graphRange='Variable picker' onRefresh={refreshData}/>
+        <GraphCard graph={data.graphs.Humidity} graphRange='Variable picker' onRefresh={refreshData}/>
       </div>
     );
   }

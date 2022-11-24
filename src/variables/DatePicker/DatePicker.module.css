@@ -1,0 +1,11 @@
+.buttonRefresh {
+  border-radius: 10px;
+  text-align: center;
+  width: 20%;
+  height: 40px;
+  background-color:#403d39;
+  /* background-color: orange; */
+}
+.buttonRefresh:hover{
+  width: 66%;
+}
