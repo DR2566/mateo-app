@@ -5,7 +5,7 @@ import Loading from 'components/Loading/Loading';
 import { refreshDataChart } from 'variables/charts';
 
 
-const Humidity = () => {
+const Pressure = () => {
   const [data, setData] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -31,10 +31,10 @@ const Humidity = () => {
   }else{
     return (
       <div className='content'>      
-        <GraphCard graph={data.graphs.Humidity} graphRange='Variable picker' onRefresh={refreshData}/>
+        <GraphCard graph={data.graphs.Pressure} graphRange='Variable picker' onRefresh={refreshData}/>
       </div>
     );
   }
 }
 
-export default Humidity;
+export default Pressure;
