@@ -54,6 +54,7 @@ function Dashboard() {
           <GauchesList gauches={data.gauches} onRefresh={refreshData}/>
           <GraphCard graph={data.graphs.Temperature} graphRange='24hours' onRefresh={refreshData}/>
           <GraphCard graph={data.graphs.Humidity} graphRange='24hours' onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Pressure} graphRange='24hours' onRefresh={refreshData}/>
         </div>
       </>
     );
