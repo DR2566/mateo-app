@@ -146,10 +146,10 @@ const graphs = {
           backgroundColor: "orange",
         },
         // {
-        //   label: 'Dataset 2',
-        //   data: [6,8,9,10],
-        //   borderColor: 'green',
-        //   backgroundColor: "green",
+        //   label: sensors[1],
+        //   data: [1,2,3,4,5],
+        //   borderColor: 'orange',
+        //   backgroundColor: "red",
         // }
       ]
     },
@@ -303,7 +303,7 @@ const graphs = {
 
 const getData = (sensor) => {
   const prom = new Promise((resolve, reject)=>{
-    axios.get('http://letka-g.ml:3333/'+sensor)
+    axios.get('http://student.gml.cz:3333/'+sensor)
       .then((res)=>{
         return resolve(res.data);
       })

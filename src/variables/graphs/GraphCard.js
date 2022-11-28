@@ -11,7 +11,9 @@ import {
   CardTitle,
   Row,
   Col,
-  Button
+  Button,
+  ButtonGroup,
+  Dropdown
 } from "reactstrap";
 // core components
 import {
@@ -20,7 +22,19 @@ import {
 import DatePicker from 'variables/DatePicker/DatePicker';
 
 const GraphCard = (props) => {
+  const [selectedTimeInterval, setSelectedTimeInterval] = useState([])
   const [currentGraph, setCurrentGraph] = useState({... props.graph});
+  const [dataStep, setDataStep] = useState('hour');
+
+  const changeDataStepHandler = (step) => {
+    setDataStep(prev=>step);
+  }
+
+  const dataStepsOptions = {
+    twoHours: 0.5,
+    hour: 1,
+    quarter: 4,
+  }
 
   const timeCodes = props.graph.data.labels.map((measure)=>{ //these codes won't be changed
     measure = new Date(measure);
@@ -28,9 +42,8 @@ const GraphCard = (props) => {
   });
 
   const eraseData = () => {
-    changeDataGraph(get24Hours()[0],get24Hours()[1]);
+    setSelectedTimeInterval([get24Hours()[0],get24Hours()[1]]);
   }
-
 
   const get24Hours = () => { // gets the yesterday's timeStamp
     let today = new Date();
@@ -49,12 +62,14 @@ const GraphCard = (props) => {
   }
   const getLabelList = ([start, stop]) =>{ // these are the timeStamps of the time interval
     let timeIntervalList = [];
-    let startHour = new Date(start);
-    let stopHour = new Date(stop);
-    let hoursDifference = Math.floor((stopHour-startHour)/(1000*3600));
-    for(let i=hoursDifference; i>=0;i--){
-      timeIntervalList.push(stopHour.getTime());   
-      stopHour.setTime(stopHour.getTime()-1*60*60*1000);
+
+    let startTime = new Date(start);
+    let stopTime = new Date(stop);
+    let timeDifference = Math.floor((stopTime-startTime)/(1000*3600))*dataStepsOptions[dataStep];
+
+    for(let i=timeDifference; i>=0;i--){
+      timeIntervalList.push(stopTime.getTime());   
+      stopTime.setTime(stopTime.getTime()-1*60*60*(1000/dataStepsOptions[dataStep]));
     } 
     return timeIntervalList;
   }
@@ -97,7 +112,7 @@ const GraphCard = (props) => {
       return day +'.'+ month +'; '+ hour;
     });
     clearedLabels = clearedLabels.map(label=>label);
-    let data = dataList.map(hour=>{return hour[0]})
+    let data = dataList.map(hour=>{return hour[0]});
     setCurrentGraph(prev=>{
       return {
         ...prev,
@@ -115,22 +130,27 @@ const GraphCard = (props) => {
       }
     });
   }
-  const changeDataGraph = (timeStampStart, timeStampStop) => {
-    let timeIntervalList = getLabelList([timeStampStart, timeStampStop]);
+  const changeDataGraph = () => {
+    let timeIntervalList = getLabelList([selectedTimeInterval[0], selectedTimeInterval[1]]);
     let dataList = getDataList(timeIntervalList);    
     croppGraphData(timeIntervalList, dataList);
   }
 
+  useEffect(()=>{
+    changeDataGraph();
+  }, [selectedTimeInterval, dataStep]);
+
   useEffect(() => {
     const [start, stop] = get24Hours();
-    changeDataGraph(start, stop);
+    setSelectedTimeInterval([start, stop]);
   }, []);
 
   const pickerHandler = (e) => {
     if(e.length === 2){
-      changeDataGraph(e[0], e[1]);
+      setSelectedTimeInterval(prev=>[e[0], e[1]]);
     }
   }
+  console.log(currentGraph);
   return (
     <Row>
       <Col md="12">
@@ -138,6 +158,12 @@ const GraphCard = (props) => {
           <CardHeader>
             <CardTitle tag="h5">{props.graph.name}</CardTitle>
             <p className="card-category">{props.graphRange}</p>
+            <div style={{textAlign: 'center'}}>
+              <ButtonGroup>
+                <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
+                <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
+              </ButtonGroup>
+            </div>
           </CardHeader>
           <CardBody>
             <Line

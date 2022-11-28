@@ -48,6 +48,7 @@ function Dashboard() {
       <Loading/>
     )
   }else{
+    console.log(data.gauches);
     return (
       <>
         <div className="content">

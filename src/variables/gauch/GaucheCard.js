@@ -14,8 +14,14 @@ import {
 
 
 const GaucheCard = (props) => {
-  // let i = props.gauch.data
-  // console.log(i);
+  // console.log('hi');
+
+  if(!props.gauch.currentValue){
+    console.log('null value');
+    props.onRefresh();
+  }
+  // let i = props.gauch.data 
+  // console.log(props.gauch.currentValue);
   return (
     <Col lg="6" md="6" sm="6" xs="12">
       <Card className="card-stats">
