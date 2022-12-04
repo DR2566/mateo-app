@@ -20,6 +20,7 @@ import {
   sensors
 } from "variables/charts.js";
 import DatePicker from 'variables/DatePicker/DatePicker';
+import dataProcess from '../../dataProcess';
 
 const GraphCard = (props) => {
   const [selectedTimeInterval, setSelectedTimeInterval] = useState([])
@@ -29,77 +30,8 @@ const GraphCard = (props) => {
   const changeDataStepHandler = (step) => {
     setDataStep(prev=>step);
   }
-
-  const dataStepsOptions = {
-    twoHours: 0.5,
-    hour: 1,
-    quarter: 4,
-  }
-
-  const timeCodes = props.graph.data.labels.map((measure)=>{ //these codes won't be changed
-    measure = new Date(measure);
-    return measure.getTime();
-  });
-
   const eraseData = () => {
-    setSelectedTimeInterval([get24Hours()[0],get24Hours()[1]]);
-  }
-
-  const get24Hours = () => { // gets the yesterday's timeStamp
-    let today = new Date();
-    let yesterday = new Date(today.getTime());
-    yesterday.setDate(today.getDate() - 1);
-
-    let dateYest = String(yesterday.getFullYear())+'-'+String((yesterday.getMonth()+1)).padStart(2, "0")+'-'+String(yesterday.getDate()).padStart(2, "0");
-    let timeYest = String(yesterday.getHours()).padStart(2, "0") + ":" + String(yesterday.getMinutes()).padStart(2, "0") + ":" + String(yesterday.getSeconds()).padStart(2, "0");
-    let timeStampYest = dateYest +';'+timeYest;
-
-    let dateToday = String(today.getFullYear())+'-'+String((today.getMonth()+1)).padStart(2, "0")+'-'+String(today.getDate()).padStart(2, "0");
-    let timeToday = String(today.getHours()).padStart(2, "0") + ":" + String(today.getMinutes()).padStart(2, "0") + ":" + String(today.getSeconds()).padStart(2, "0");
-    let timeStampToday = dateToday +';'+timeToday;
-
-    return [timeStampYest, timeStampToday];
-  }
-  const getLabelList = ([start, stop]) =>{ // these are the timeStamps of the time interval
-    let timeIntervalList = [];
-
-    let startTime = new Date(start);
-    let stopTime = new Date(stop);
-    let timeDifference = Math.floor((stopTime-startTime)/(1000*3600))*dataStepsOptions[dataStep];
-
-    for(let i=timeDifference; i>=0;i--){
-      timeIntervalList.push(stopTime.getTime());   
-      stopTime.setTime(stopTime.getTime()-1*60*60*(1000/dataStepsOptions[dataStep]));
-    } 
-    return timeIntervalList;
-  }
-  const getDataList = (timeIntervalList) => {
-    let choosedValuesTime = [];
-    for(let i=0;i<timeIntervalList.length-1;i++){
-      let start = timeIntervalList[i+1];
-      let stop = timeIntervalList[i];
-      choosedValuesTime.push([])
-      for(let b=0;b<timeCodes.length;b++){
-        if(timeCodes[b]>=start && timeCodes[b]<=stop){
-          choosedValuesTime[i].push(timeCodes[b]);
-        }
-      }
-    }
-    // MAKE AN AVERAGES OF EACH HOUR
-    let dataList=[];
-    choosedValuesTime.map(lis=>{
-      let hourValue = 0;
-      lis.map(time=>{
-        if(time){
-          let value = props.graph.data.datasets[0].data[timeCodes.indexOf(time)];
-          hourValue+=value;
-        }
-      })
-      let avg = hourValue / lis.length;
-      dataList.push([avg]);
-      
-    })
-    return dataList;
+    setSelectedTimeInterval([dataProcess.getPastTime(1)[0],dataProcess.getPastTime(1)[1]]);
   }
   const croppGraphData = (timeIntervalList, dataList) => {
     timeIntervalList = timeIntervalList.slice(0, timeIntervalList.length-1).reverse();
@@ -111,7 +43,6 @@ const GraphCard = (props) => {
       let month = String(date.getMonth()+1);
       return day +'.'+ month +'; '+ hour;
     });
-    clearedLabels = clearedLabels.map(label=>label);
     let data = dataList.map(hour=>{return hour[0]});
     setCurrentGraph(prev=>{
       return {
@@ -131,8 +62,8 @@ const GraphCard = (props) => {
     });
   }
   const changeDataGraph = () => {
-    let timeIntervalList = getLabelList([selectedTimeInterval[0], selectedTimeInterval[1]]);
-    let dataList = getDataList(timeIntervalList);    
+    let timeIntervalList = dataProcess.getLabelList([selectedTimeInterval[0], selectedTimeInterval[1]], dataStep);
+    let dataList = dataProcess.getDataList(timeIntervalList, props.graph);    
     croppGraphData(timeIntervalList, dataList);
   }
 
@@ -141,7 +72,7 @@ const GraphCard = (props) => {
   }, [selectedTimeInterval, dataStep]);
 
   useEffect(() => {
-    const [start, stop] = get24Hours();
+    const [start, stop] = dataProcess.getPastTime(1);
     setSelectedTimeInterval([start, stop]);
   }, []);
 
@@ -150,7 +81,6 @@ const GraphCard = (props) => {
       setSelectedTimeInterval(prev=>[e[0], e[1]]);
     }
   }
-  console.log(currentGraph);
   return (
     <Row>
       <Col md="12">
@@ -176,7 +106,7 @@ const GraphCard = (props) => {
           <CardFooter>
             <hr />
             <div className="stats">
-              {(props.graphRange !=='24hours')
+              {(typeof props.graphRange !== 'number')
                 ? <DatePicker onErase={eraseData} onChange={pickerHandler}/>
                 : null
               }

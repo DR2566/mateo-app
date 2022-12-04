@@ -48,14 +48,14 @@ function Dashboard() {
       <Loading/>
     )
   }else{
-    console.log(data.gauches);
     return (
       <>
         <div className="content">
           <GauchesList gauches={data.gauches} onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Temperature} graphRange='24hours' onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Humidity} graphRange='24hours' onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Pressure} graphRange='24hours' onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Temperature} graphRange={1} onRefresh={refreshData}/> 
+          {/* the graphRange is how much back of days we want to get data*/}
+          <GraphCard graph={data.graphs.Humidity} graphRange={1} onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Pressure} graphRange={1} onRefresh={refreshData}/>
         </div>
       </>
     );

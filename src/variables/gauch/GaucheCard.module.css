@@ -1,0 +1,10 @@
+.valuesTag {
+  /* background-color: orange; */
+  display: flex;
+  justify-content: space-around;
+}
+.valuesTag p {
+  /* background-color: red; */
+  margin: 5px 10px;
+  font-size: larger;
+}

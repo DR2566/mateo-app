@@ -11,17 +11,15 @@ import {
   Col,
   Button
 } from "reactstrap";
+import classes from './GaucheCard.module.css';
 
 
 const GaucheCard = (props) => {
-  // console.log('hi');
 
   if(!props.gauch.currentValue){
-    console.log('null value');
     props.onRefresh();
   }
-  // let i = props.gauch.data 
-  // console.log(props.gauch.currentValue);
+
   return (
     <Col lg="6" md="6" sm="6" xs="12">
       <Card className="card-stats">
@@ -33,6 +31,12 @@ const GaucheCard = (props) => {
           <Row>
             <Col g="12" md="12" sm="12" xs="12">
               <Doughnut data={props.gauch.data} options={props.gauch.options} className="gauch-graph"></Doughnut>        
+            </Col>
+            <Col>
+              <div className={classes.valuesTag}>
+                <p>{props.gauch.range[0]}{props.gauch.unit}</p>
+                <p>{props.gauch.range[1]}{props.gauch.unit}</p>                
+              </div>
             </Col>
             <Col lg="12" md="12" sm="12" xs="12" className="gauch-value">
               <p>{props.gauch.currentValue}{props.gauch.unit}</p>
