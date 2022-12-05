@@ -22,10 +22,13 @@ import {
 import DatePicker from 'variables/DatePicker/DatePicker';
 import dataProcess from '../../dataProcess';
 
+import Loading from "components/Loading/Loading";
+
 const GraphCard = (props) => {
   const [selectedTimeInterval, setSelectedTimeInterval] = useState([])
   const [currentGraph, setCurrentGraph] = useState({... props.graph});
   const [dataStep, setDataStep] = useState('hour');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const changeDataStepHandler = (step) => {
     setDataStep(prev=>step);
@@ -69,53 +72,65 @@ const GraphCard = (props) => {
 
   useEffect(()=>{
     changeDataGraph();
-  }, [selectedTimeInterval, dataStep]);
+    if(currentGraph.name && !currentGraph.data.labels.length){
+      setIsLoaded(true);
+    }
+  }, [selectedTimeInterval, dataStep]); //after useEffect below
 
   useEffect(() => {
+    if(isLoaded){
+      setIsLoaded(false);
+    }
     const [start, stop] = dataProcess.getPastTime(1);
     setSelectedTimeInterval([start, stop]);
-  }, []);
+  }, []); //only once
 
   const pickerHandler = (e) => {
     if(e.length === 2){
       setSelectedTimeInterval(prev=>[e[0], e[1]]);
     }
   }
-  return (
-    <Row>
-      <Col md="12">
-        <Card>
-          <CardHeader>
-            <CardTitle tag="h5">{props.graph.name}</CardTitle>
-            <p className="card-category">{props.graphRange}</p>
-            <div style={{textAlign: 'center'}}>
-              <ButtonGroup>
-                <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
-                <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
-              </ButtonGroup>
-            </div>
-          </CardHeader>
-          <CardBody>
-            <Line
-              data={currentGraph.data}
-              options={currentGraph.options}
-              width={2}
-              height={1}
-            />
-          </CardBody>
-          <CardFooter>
-            <hr />
-            <div className="stats">
-              {(typeof props.graphRange !== 'number')
-                ? <DatePicker onErase={eraseData} onChange={pickerHandler}/>
-                : null
-              }
-            </div>
-          </CardFooter>
-        </Card>
-      </Col>
-    </Row>
-  );
+  if(!isLoaded){
+    <Loading/>
+  }else{
+    console.log(currentGraph);
+    return (
+      <Row>
+        <Col md="12">
+          <Card>
+            <CardHeader>
+              <CardTitle tag="h5">{props.graph.name}</CardTitle>
+              <p className="card-category">{(props.graphRange===1)? '24 hours data':props.graphRange}</p>
+              <div style={{textAlign: 'center'}}>
+                <ButtonGroup>
+                  <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
+                  <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
+                </ButtonGroup>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Line
+                data={currentGraph.data}
+                options={currentGraph.options}
+                width={2}
+                height={1}
+              />
+            </CardBody>
+            <CardFooter>
+              <hr />
+              <div className="stats">
+                {(typeof props.graphRange !== 'number')
+                  ? <DatePicker onErase={eraseData} onChange={pickerHandler}/>
+                  : null
+                }
+              </div>
+            </CardFooter>
+          </Card>
+        </Col>
+      </Row>
+    );
+  }
+
 }
 
 export default GraphCard;

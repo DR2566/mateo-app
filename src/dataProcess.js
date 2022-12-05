@@ -75,7 +75,6 @@ class Process {
       })
       let avg = hourValue / lis.length;
       dataList.push([avg]);
-      
     })
     return dataList;
   }

@@ -31,7 +31,7 @@ const Pressure = () => {
   }else{
     return (
       <div className='content'>      
-        <GraphCard graph={data.graphs.Pressure} graphRange='Variable picker' onRefresh={refreshData}/>
+        <GraphCard graph={data.graphs.Pressure} graphRange='Variable data time' onRefresh={refreshData}/>
       </div>
     );
   }

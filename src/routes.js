@@ -3,6 +3,7 @@ import Icons from "views/Icons.js";
 import Temperature from "views/Temperature";
 import Humidity from "views/Humidity";
 import Pressure from "views/Pressure";
+import Uv from 'views/Uv';
 
 
 var routes = [
@@ -29,6 +30,12 @@ var routes = [
     name: "Pressure",
     icon: "nc-icon nc-chart-bar-32",
     component: Pressure,
+  },
+  {
+    path: "/uv",
+    name: "Uv",
+    icon: "nc-icon nc-chart-bar-32",
+    component: Uv,
   },
   // {
   //   path: "/icons",

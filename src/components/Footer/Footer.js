@@ -30,7 +30,7 @@ function Footer(props) {
           <div className="credits ml-auto">
             <div className="copyright">
               &copy; {1900 + new Date().getYear()}, made with{" "}
-              <i className="fa fa-heart heart" /> by David Roček, Jakub Genčur, Jakub Mariančík, Michal Eliáš & Creative Tim<br/>LetkaGML team
+              <i className="fa fa-heart heart" /> by LetkaGML team
             </div>
           </div>
         </Row>

@@ -56,6 +56,7 @@ function Dashboard() {
           {/* the graphRange is how much back of days we want to get data*/}
           <GraphCard graph={data.graphs.Humidity} graphRange={1} onRefresh={refreshData}/>
           <GraphCard graph={data.graphs.Pressure} graphRange={1} onRefresh={refreshData}/>
+          <GraphCard graph={data.graphs.Uv} graphRange={1} onRefresh={refreshData}/>
         </div>
       </>
     );

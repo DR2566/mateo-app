@@ -1,12 +1,12 @@
 import axios from 'axios';
 import dataProcess from 'dataProcess';
 
-export const sensors = ['Temperature', 'Humidity', 'Pressure'];
+export const sensors = ['Temperature', 'Humidity', 'Pressure', 'Uv'];
 
 const gauches = { //these are the semi-circle graphs
   Temperature: { // current temperature 
     unit: "°C",
-    range: [-8, 32],
+    range: [0, 0],
     currentValue: 0,//this value will be actualized while the refreshing process
     data: {
       labels: ["Red"],
@@ -39,7 +39,7 @@ const gauches = { //these are the semi-circle graphs
   },  
   Humidity: { // current humidity 
     unit: "%",
-    range: [0, 100],
+    range: [0, 0],
     currentValue: 0,//this value will be actualized while the refreshing process
     data: {
       labels: ["Red"],
@@ -72,7 +72,40 @@ const gauches = { //these are the semi-circle graphs
   }, 
   Pressure: { // current humidity 
     unit: " hPa",
-    range: [0, 1000],
+    range: [0],
+    currentValue: 0,//this value will be actualized while the refreshing process
+    data: {
+      labels: ["Red"],
+      datasets: [
+        {
+          data: [0, 100],
+          backgroundColor: ["rgba(255, 99, 132, 0.2)", "#adadad"],
+          borderColor: ["rgba(255,99,132,1)"],
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      maintainAspectRatio: false,
+      circumference: 180,
+      rotation: 270,
+      valueLabel: {
+        fontSize: 24,
+        formatter: function (value, context) {
+          // debugger;
+          return "57" + " %";
+          // return '< ' + Math.round(value);
+        }
+      }
+    }
+  }, 
+  Uv: { // current temperature 
+    unit: "mW",
+    range: [0, 0],
     currentValue: 0,//this value will be actualized while the refreshing process
     data: {
       labels: ["Red"],
@@ -172,6 +205,41 @@ const graphs = {
   },
   Pressure: { //Humidity in a graph
     name: sensors[2],
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: sensors[2],
+          data: [],
+          borderColor: 'orange',
+          backgroundColor: "orange",
+        },
+        // {
+        //   label: 'Dataset 2',
+        //   data: [6,8,9,10],
+        //   borderColor: 'green',
+        //   backgroundColor: "green",
+        // }
+      ]
+    },
+    options: {
+      type: 'line',
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Chart.js Line Chart'
+          }
+        }
+      },
+    }
+  },
+  Uv: { //Humidity in a graph
+    name: sensors[3],
     data: {
       labels: [],
       datasets: [
@@ -334,9 +402,15 @@ const refreshDataChart = () => {
   })
   return(prom);
 }
+let currentTimeIntervalList = [];
+
+const getCurrentTimeIntervalList = () =>{
+  return currentTimeIntervalList = dataProcess.getLabelList(7, 'quarter'); // we want the limits of 7 days back till now; quarterly
+}
+
 const getLimits = (sensor) => {
-  let timeIntervalList = dataProcess.getLabelList(7, 'quarter'); // we want the limits of 7 days back till now; quarterly
-  let data = dataProcess.getDataList(timeIntervalList, graphs[sensor]).map(value=>value[0]);
+  currentTimeIntervalList = sensor === 'Temperature' ? getCurrentTimeIntervalList() : currentTimeIntervalList; // we want to load it only ones while the calling session /=> for the first sensor, for the rest it will be the same
+  let data = dataProcess.getDataList(currentTimeIntervalList, graphs[sensor]).map(value=>value[0]);
   let dataCleared = [];
   data.forEach((value)=>{
     if(!!value){
@@ -345,6 +419,8 @@ const getLimits = (sensor) => {
   })
   let maxValue = Math.max(...dataCleared).toFixed(2);
   let minValue = Math.min(...dataCleared).toFixed(2);
+  console.log(maxValue);
+  console.log(dataCleared, data);
   return [minValue, maxValue];
 }
 const setCurrentValues = (dataList, sensor) =>{
