@@ -93,7 +93,7 @@ const GraphCard = (props) => {
   if(!isLoaded){
     <Loading/>
   }else{
-    console.log(currentGraph);
+    // console.log(currentGraph);
     return (
       <Row>
         <Col md="12">

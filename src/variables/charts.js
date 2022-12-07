@@ -409,7 +409,8 @@ const getCurrentTimeIntervalList = () =>{
 }
 
 const getLimits = (sensor) => {
-  currentTimeIntervalList = sensor === 'Temperature' ? getCurrentTimeIntervalList() : currentTimeIntervalList; // we want to load it only ones while the calling session /=> for the first sensor, for the rest it will be the same
+  // currentTimeIntervalList = sensor === 'Temperature' ? getCurrentTimeIntervalList() : currentTimeIntervalList; // we want to load it only ones while the calling session /=> for the first sensor, for the rest it will be the same
+  currentTimeIntervalList =getCurrentTimeIntervalList()
   let data = dataProcess.getDataList(currentTimeIntervalList, graphs[sensor]).map(value=>value[0]);
   let dataCleared = [];
   data.forEach((value)=>{
@@ -419,8 +420,8 @@ const getLimits = (sensor) => {
   })
   let maxValue = Math.max(...dataCleared).toFixed(2);
   let minValue = Math.min(...dataCleared).toFixed(2);
-  console.log(maxValue);
-  console.log(dataCleared, data);
+  // console.log(maxValue);
+  // console.log(dataCleared, data);
   return [minValue, maxValue];
 }
 const setCurrentValues = (dataList, sensor) =>{
