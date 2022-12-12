@@ -405,12 +405,13 @@ const refreshDataChart = () => {
 let currentTimeIntervalList = [];
 
 const getCurrentTimeIntervalList = () =>{
-  return currentTimeIntervalList = dataProcess.getLabelList(7, 'quarter'); // we want the limits of 7 days back till now; quarterly
+  let currentTimeIntervalList = dataProcess.getLabelList(7, 'quarter'); // we want the limits of 7 days back till now; quarterly
+  // console.log(currentTimeIntervalList);
+  return currentTimeIntervalList;
 }
 
 const getLimits = (sensor) => {
-  // currentTimeIntervalList = sensor === 'Temperature' ? getCurrentTimeIntervalList() : currentTimeIntervalList; // we want to load it only ones while the calling session /=> for the first sensor, for the rest it will be the same
-  currentTimeIntervalList =getCurrentTimeIntervalList()
+  currentTimeIntervalList = getCurrentTimeIntervalList()
   let data = dataProcess.getDataList(currentTimeIntervalList, graphs[sensor]).map(value=>value[0]);
   let dataCleared = [];
   data.forEach((value)=>{
@@ -420,8 +421,7 @@ const getLimits = (sensor) => {
   })
   let maxValue = Math.max(...dataCleared).toFixed(2);
   let minValue = Math.min(...dataCleared).toFixed(2);
-  // console.log(maxValue);
-  // console.log(dataCleared, data);
+
   return [minValue, maxValue];
 }
 const setCurrentValues = (dataList, sensor) =>{
@@ -438,7 +438,7 @@ const setCurrentValues = (dataList, sensor) =>{
 }
 const setLongtimeValues = (dataList, sensor)=>{
   graphs[sensor].data.datasets[0].data = dataList.map((data)=>data.value);
-  graphs[sensor].data.labels = dataList.map((data)=>data.create_time);
+  graphs[sensor].data.labels = dataList.map((data)=>data.create_time.replace(';','T')+'+01:00');
 }
 export { 
   refreshDataChart,

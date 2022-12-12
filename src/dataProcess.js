@@ -6,6 +6,11 @@ class Process {
       quarter: 4,
     }    
   }
+  getFormate(badFormat){
+    let hoursLate = new Date(Date.parse(badFormat));
+    let rightTimeDateStamp = new Date(hoursLate.getHours())
+    return hoursLate;
+  }
   getPastTime = (daysBack) => { // gets the yesterday's timeStamp
     let today = new Date();
     let yesterday = new Date(today.getTime());
@@ -13,18 +18,18 @@ class Process {
 
     let dateYest = String(yesterday.getFullYear())+'-'+String((yesterday.getMonth()+1)).padStart(2, "0")+'-'+String(yesterday.getDate()).padStart(2, "0");
     let timeYest = String(yesterday.getHours()).padStart(2, "0") + ":" + String(yesterday.getMinutes()).padStart(2, "0") + ":" + String(yesterday.getSeconds()).padStart(2, "0");
-    let timeStampYest = dateYest +';'+timeYest;
+    let timeStampYest = dateYest +'T'+timeYest+'+01:00';
 
     let dateToday = String(today.getFullYear())+'-'+String((today.getMonth()+1)).padStart(2, "0")+'-'+String(today.getDate()).padStart(2, "0");
     let timeToday = String(today.getHours()).padStart(2, "0") + ":" + String(today.getMinutes()).padStart(2, "0") + ":" + String(today.getSeconds()).padStart(2, "0");
-    let timeStampToday = dateToday +';'+timeToday;
+    let timeStampToday = dateToday +'T'+timeToday+'+01:00';
 
     return [timeStampYest, timeStampToday];
   }
   getTimeStamps = (labels) => {
     // console.log(labels);
     const timeCodes = labels.map((measure)=>{ //these codes won't be changed
-      measure = new Date(measure);
+      measure = this.getFormate(measure);
       return measure.getTime();
     });  
     return timeCodes;
@@ -39,14 +44,15 @@ class Process {
     } else{
       [start, stop] = backTime;
     }
-    let startTime = new Date(start);
-    let stopTime = new Date(stop);
-    let timeDifference = Math.floor((stopTime-startTime)/(1000*3600))*this.dataStepsOptions[dataStep];
+
+    let startTime = this.getFormate(start);
+    let stopTime = this.getFormate(stop);
+    let timeDifference = Math.floor((stopTime.getTime()-startTime.getTime())/(1000*3600))*this.dataStepsOptions[dataStep];
 
     for(let i=timeDifference; i>=0;i--){
       timeIntervalList.push(stopTime.getTime());   
       stopTime.setTime(stopTime.getTime()-1*60*60*(1000/this.dataStepsOptions[dataStep]));
-    } 
+    }
     return timeIntervalList;
   }
   getDataList = (timeIntervalList, graphOriginal) => {
