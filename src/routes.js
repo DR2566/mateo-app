@@ -4,6 +4,7 @@ import Temperature from "views/Temperature";
 import Humidity from "views/Humidity";
 import Pressure from "views/Pressure";
 import Uv from 'views/Uv';
+import Test from 'views/Test';
 
 
 var routes = [
@@ -37,12 +38,17 @@ var routes = [
     icon: "nc-icon nc-chart-bar-32",
     component: Uv,
   },
+  {
+    path: "/test",
+    name: "Testing sensors",
+    icon: "nc-icon nc-settings",
+    component: Test,
+  },
   // {
   //   path: "/icons",
   //   name: "Icons",
   //   icon: "nc-icon nc-chart-bar-32",
   //   component: Icons,
   // },
-
 ];
 export default routes;
