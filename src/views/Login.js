@@ -18,7 +18,7 @@ export default function Login(props) {
     <div>
       <Row>
         <Col>
-          <Card style={{width:'50%', margin: 'auto'}}>
+          <Card style={{width:'80%', margin: 'auto'}}>
             <CardHeader style={{textAlign:'center', fontSize:'40px'}}>
               Login
             </CardHeader>

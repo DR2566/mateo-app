@@ -4,7 +4,8 @@
 .textInput {
   border-radius: 10px;
   margin-bottom: 10px;
-  height: 30px;
+  height: 41px;
+  width: 60%;
   padding: 5%;
   border-style:none;
   border: 1px solid black
