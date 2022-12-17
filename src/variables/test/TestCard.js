@@ -31,7 +31,7 @@ const TestCard = (props) => {
             <div style={{display:'inline', textAlign:'right'}}>
               {((props.value!=='error') && (!!props.value) && (!!props.loaded))
                 ? <i className="nc-icon nc-check-2" /> 
-                : <i className="nc-icon nc-simple-remove" />   
+                : <i className="nc-icon nc-simple-remove"/>   
               }
             </div>
           </div>

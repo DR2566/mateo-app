@@ -26,7 +26,6 @@ export default function Login(props) {
               <LoginForm onSuccessLogin={props.onSuccessLogin}/>
             </CardBody>
             <CardFooter>
-
             </CardFooter>
           </Card>
         </Col>  
