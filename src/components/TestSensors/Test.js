@@ -12,7 +12,7 @@ import {
   Dropdown
 } from "reactstrap";
 import {useEffect, useState} from 'react'
-import TestList from '../variables/test/TestList'
+import TestList from '../../variables/test/TestList'
 import axios from 'axios';
 
 

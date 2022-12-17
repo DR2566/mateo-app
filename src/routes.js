@@ -4,7 +4,7 @@ import Temperature from "views/Temperature";
 import Humidity from "views/Humidity";
 import Pressure from "views/Pressure";
 import Uv from 'views/Uv';
-import Test from 'views/Test';
+import DevOptions from 'views/DevOptions';
 
 
 var routes = [
@@ -40,9 +40,9 @@ var routes = [
   },
   {
     path: "/test",
-    name: "Testing sensors",
+    name: "DevOps",
     icon: "nc-icon nc-settings",
-    component: Test,
+    component: DevOptions,
   },
   // {
   //   path: "/icons",
