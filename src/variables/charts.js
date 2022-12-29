@@ -1,5 +1,7 @@
 import axios from 'axios';
 import dataProcess from 'dataProcess';
+import routes from 'routes';
+import ErrorSite from './ErrorSite/ErrorSite';
 
 export const sensors = ['Temperature', 'Humidity', 'Pressure', 'Uv'];
 
@@ -244,7 +246,7 @@ const graphs = {
       labels: [],
       datasets: [
         {
-          label: sensors[2],
+          label: sensors[3],
           data: [],
           borderColor: 'orange',
           backgroundColor: "orange",
@@ -402,6 +404,12 @@ const refreshDataChart = () => {
   })
   return(prom);
 }
+// const erroriseSites = () => {
+//   routes.map(route => {
+//     route.component = ErrorSite;
+//   })
+// }
+
 let currentTimeIntervalList = [];
 
 const getCurrentTimeIntervalList = () =>{
@@ -422,6 +430,9 @@ const getLimits = (sensor) => {
   let maxValue = Math.max(...dataCleared).toFixed(2);
   let minValue = Math.min(...dataCleared).toFixed(2);
 
+  // if(Math.abs(maxValue) === Infinity || Math.abs(minValue) === Infinity){
+  //   erroriseSites(); // make errors through all the sites
+  // }
   return [minValue, maxValue];
 }
 const setCurrentValues = (dataList, sensor) =>{
@@ -442,4 +453,5 @@ const setLongtimeValues = (dataList, sensor)=>{
 }
 export { 
   refreshDataChart,
+  // erroriseSites,
  }

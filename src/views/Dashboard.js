@@ -24,10 +24,12 @@ import GauchesList from '../variables/gauch/GauchesList';
 import GraphCard from "variables/graphs/GraphCard";
 
 import Loading from "components/Loading/Loading";
+import ErrorSite from "variables/ErrorSite/ErrorSite";
 
 
 function Dashboard() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState(false);
   const [data, setData] = useState({});
 
   const refreshData = () =>{

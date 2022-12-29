@@ -5,6 +5,7 @@ import Humidity from "views/Humidity";
 import Pressure from "views/Pressure";
 import Uv from 'views/Uv';
 import DevOptions from 'views/DevOptions';
+import ErrorSite from 'variables/ErrorSite/ErrorSite'
 
 
 var routes = [

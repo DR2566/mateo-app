@@ -8,6 +8,7 @@ import '@ionic/react/css/core.css';
 import DemoNavbar from "components/Navbars/DemoNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import ErrorSite from "variables/ErrorSite/ErrorSite";
 
 
 import routes from "routes.js";

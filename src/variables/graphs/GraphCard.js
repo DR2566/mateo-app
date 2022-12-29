@@ -17,18 +17,22 @@ import {
 } from "reactstrap";
 // core components
 import {
-  sensors
+  sensors,
+  // erroriseSites
 } from "variables/charts.js";
 import DatePicker from 'variables/DatePicker/DatePicker';
 import dataProcess from '../../dataProcess';
 
 import Loading from "components/Loading/Loading";
+import ErrorSite from "variables/ErrorSite/ErrorSite";
 
 const GraphCard = (props) => {
   const [selectedTimeInterval, setSelectedTimeInterval] = useState([])
   const [currentGraph, setCurrentGraph] = useState({... props.graph});
   const [dataStep, setDataStep] = useState('hour');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
 
   const changeDataStepHandler = (step) => {
     setDataStep(prev=>step);
@@ -46,7 +50,12 @@ const GraphCard = (props) => {
       let month = String(date.getMonth()+1);
       return day +'.'+ month +'; '+ hour;
     });
-    let data = dataList.map(hour=>{return hour[0]});
+    let data = dataList.map(hour=>{return hour[0]}); // arrays of arrays converted to only one array 
+    let valideNumbers = data.filter(value=>value); // filter all non NaN values
+    if(!valideNumbers.length){
+      // erroriseSites();
+      setError(true);
+    }
     setCurrentGraph(prev=>{
       return {
         ...prev,
@@ -101,20 +110,26 @@ const GraphCard = (props) => {
             <CardHeader>
               <CardTitle tag="h5">{props.graph.name}</CardTitle>
               <p className="card-category">{(props.graphRange===1)? '24 hours data':props.graphRange}</p>
-              <div style={{textAlign: 'center'}}>
-                <ButtonGroup>
-                  <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
-                  <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
-                </ButtonGroup>
-              </div>
+              {(error)
+                ? null
+                : <div style={{textAlign: 'center'}}>
+                    <ButtonGroup>
+                      <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
+                      <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
+                    </ButtonGroup>
+                  </div>
+              }
             </CardHeader>
             <CardBody>
-              <Line
-                data={currentGraph.data}
-                options={currentGraph.options}
-                width={2}
-                height={1}
-              />
+              {(error)
+                ? <ErrorSite/>
+                : <Line
+                    data={currentGraph.data}
+                    options={currentGraph.options}
+                    width={2}
+                    height={1}
+                  />
+              } 
             </CardBody>
             <CardFooter>
               <hr />
