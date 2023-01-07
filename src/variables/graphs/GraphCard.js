@@ -55,6 +55,8 @@ const GraphCard = (props) => {
     if(!valideNumbers.length){
       // erroriseSites();
       setError(true);
+    } else{
+      setError(false)
     }
     setCurrentGraph(prev=>{
       return {
@@ -110,7 +112,7 @@ const GraphCard = (props) => {
             <CardHeader>
               <CardTitle tag="h5">{props.graph.name}</CardTitle>
               <p className="card-category">{(props.graphRange===1)? '24 hours data':props.graphRange}</p>
-              {(error)
+              {(error) // for the hide the time range
                 ? null
                 : <div style={{textAlign: 'center'}}>
                     <ButtonGroup>
