@@ -16,17 +16,14 @@ import {
   sensors
 } from "variables/charts.js";
 
-
 const GauchesList = (props) => {
   // console.log(props.gauches);
   return (
       <Row>
           {
-            sensors.map((sensor, key)=>{
-              let gauch = props.gauches[sensor];
-              // console.log({gauch, sensor});
+            sensors.map((sensorName, key)=>{
               return(
-                <GaucheCard gauch={gauch} gauchName={sensor} key={key} onRefresh={props.onRefresh}/>
+                <GaucheCard gauchName={sensorName} key={key} />
               )
             })
           }

@@ -45,11 +45,5 @@ var routes = [
     icon: "nc-icon nc-settings",
     component: DevOptions,
   },
-  // {
-  //   path: "/icons",
-  //   name: "Icons",
-  //   icon: "nc-icon nc-chart-bar-32",
-  //   component: Icons,
-  // },
 ];
 export default routes;

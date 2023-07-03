@@ -25,46 +25,27 @@ import GraphCard from "variables/graphs/GraphCard";
 
 import Loading from "components/Loading/Loading";
 import ErrorSite from "variables/ErrorSite/ErrorSite";
+import { DataContext } from "variables/DataContext";
 
 
-function Dashboard() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState(false);
-  const [data, setData] = useState({});
+const Dashboard = (props) => {
 
-  const refreshData = () =>{
-    setIsLoaded(false);
-    refreshDataChart()
-      .then((data)=>{
-        setData(prev=>data);
-        setIsLoaded(true);
-      })
-  }
+  // let dataContext = useContext(DataContext);
 
-  useEffect(() => {
-    refreshData();
-  }, []);
+  return (
+    <>
+      <div className="content">
+        <p>
 
-  if(!isLoaded){
-    return(
-      <Loading/>
-    )
-  }else{
-    return (
-      <>
-        <div className="content">
-          <GauchesList gauches={data.gauches} onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Temperature} graphRange={1} onRefresh={refreshData}/> 
-          {/* the graphRange is how much back of days we want to get data*/}
-          <GraphCard graph={data.graphs.Humidity} graphRange={1} onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Pressure} graphRange={1} onRefresh={refreshData}/>
-          <GraphCard graph={data.graphs.Uv} graphRange={1} onRefresh={refreshData}/>
-        </div>
-      </>
-    );
-  }
-
-
+        </p>
+        <GauchesList />
+        <GraphCard graphName='Temperature' graphRange={'24 hours'}  /> 
+        <GraphCard graphName='Humidity' graphRange={'24 hours'}  /> 
+        <GraphCard graphName='Pressure' graphRange={'24 hours'}  /> 
+        <GraphCard graphName='Uv' graphRange={'24 hours'}  /> 
+      </div>
+    </>
+  );
 }
 
 export default Dashboard;

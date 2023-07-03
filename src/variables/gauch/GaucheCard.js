@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line, Pie, Doughnut } from "react-chartjs-2";
 // reactstrap components
 import {
@@ -13,20 +13,25 @@ import {
 } from "reactstrap";
 import ErrorSite from 'variables/ErrorSite/ErrorSite';
 import classes from './GaucheCard.module.css';
-import { useState } from 'react';
+import { getGauchObject } from 'dataProcess';
+import Loading from 'components/Loading/Loading';
 
 
 const GaucheCard = (props) => {
-  let err = false
+  const [error, setError] = useState(false);
+  const [currentGauch, setCurrentGauch] = useState({});
+  const [loaded, setLoaded] = useState(false);
 
-  if(!props.gauch.currentValue){
-    props.onRefresh();
+  const loadData = async () => {
+    setLoaded(false);
+    let gauchObject = await getGauchObject(props.gauchName);
+    await setCurrentGauch(gauchObject)
+    setLoaded(true);
   }
-  let maxValue = props.gauch.range[1];
-  let minValue = props.gauch.range[0];
-  if(Math.abs(maxValue) === Infinity || Math.abs(minValue) === Infinity){
-    err = true;
-  }
+
+  useEffect(()=>{
+    loadData()
+  },[])
 
   return (
     <Col lg="6" md="6" sm="6" xs="12">
@@ -35,25 +40,29 @@ const GaucheCard = (props) => {
           <CardTitle tag="h5">{props.gauchName}</CardTitle>
           <p className="card-category">Actual data</p>
         </CardHeader>
+        {!loaded
+        ? <CardBody><Loading/></CardBody>
+        :
         <CardBody>
-          {(err) 
+          {(error) 
             ? <ErrorSite/>
             : <Row>
                 <Col g="12" md="12" sm="12" xs="12">
-                  <Doughnut data={props.gauch.data} options={props.gauch.options} className="gauch-graph"></Doughnut>        
+                  <Doughnut data={currentGauch.data} options={currentGauch.options} className="gauch-graph"></Doughnut>        
                 </Col>
                 <Col>
                   <div className={classes.valuesTag}>
-                    <p>{props.gauch.range[0]}{props.gauch.unit}</p>
-                    <p>{props.gauch.range[1]}{props.gauch.unit}</p>                
+                    <p>{currentGauch.range[0]}{currentGauch.unit}</p>
+                    <p>{currentGauch.range[1]}{currentGauch.unit}</p>                
                   </div>
                 </Col>
                 <Col lg="12" md="12" sm="12" xs="12" className="gauch-value">
-                  <p>{props.gauch.currentValue}{props.gauch.unit}</p>
+                  <p>{currentGauch.currentValue}{currentGauch.unit}</p>
                 </Col>
               </Row>
           }
         </CardBody>
+        }
         <CardFooter>
           <hr />
           <div className="stats">

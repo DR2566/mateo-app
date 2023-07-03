@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 // react plugin used to create charts
 import { Line, Pie, Doughnut } from "react-chartjs-2";
 // reactstrap components
@@ -21,132 +21,96 @@ import {
   // erroriseSites
 } from "variables/charts.js";
 import DatePicker from 'variables/DatePicker/DatePicker';
-import dataProcess from '../../dataProcess';
 
 import Loading from "components/Loading/Loading";
 import ErrorSite from "variables/ErrorSite/ErrorSite";
+import { DataContext } from "variables/DataContext";
+
+import { getGraphObject, getData} from "dataProcess";
 
 const GraphCard = (props) => {
-  const [selectedTimeInterval, setSelectedTimeInterval] = useState([])
-  const [currentGraph, setCurrentGraph] = useState({... props.graph});
-  const [dataStep, setDataStep] = useState('hour');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedTimeInterval, setSelectedTimeInterval] = useState(false)
+  const [currentGraph, setCurrentGraph] = useState(null);
+  const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [responseObject, setResponseObject] = useState(null)
+  const [granularity, setGranularity] = useState('hour');
 
-
-  const changeDataStepHandler = (step) => {
-    setDataStep(prev=>step);
+  const changeDataGranularityHandler = async(granularity) => {
+    setLoaded(false);
+    setGranularity(granularity)
+    let graphObject = getGraphObject(responseObject, props.graphName, granularity);
+    await setCurrentGraph(graphObject)
+    setLoaded(true);
   }
-  const eraseData = () => {
-    setSelectedTimeInterval([dataProcess.getPastTime(1)[0],dataProcess.getPastTime(1)[1]]);
-  }
-  const croppGraphData = (timeIntervalList, dataList) => {
-    timeIntervalList = timeIntervalList.slice(0, timeIntervalList.length-1).reverse();
-    dataList = dataList.reverse();
-    let clearedLabels = timeIntervalList.map(intDate=>{
-      let date = new Date(intDate);
-      let hour = String(date.getHours());
-      let day = String(date.getDate());
-      let month = String(date.getMonth()+1);
-      return day +'.'+ month +'; '+ hour;
-    });
-    let data = dataList.map(hour=>{return hour[0]}); // arrays of arrays converted to only one array 
-    let valideNumbers = data.filter(value=>value); // filter all non NaN values
-    if(!valideNumbers.length){
-      // erroriseSites();
-      setError(true);
-    } else{
-      setError(false)
-    }
-    setCurrentGraph(prev=>{
-      return {
-        ...prev,
-        data: {
-          labels: clearedLabels,
-          datasets: [
-            {
-              ...prev.data.datasets[0],
-              data: data,
-              borderColor: 'orange',
-              backgroundColor: "orange",
-            }
-          ]
-        },
-      }
-    });
-  }
-  const changeDataGraph = () => {
-    let timeIntervalList = dataProcess.getLabelList([selectedTimeInterval[0], selectedTimeInterval[1]], dataStep);
-    let dataList = dataProcess.getDataList(timeIntervalList, props.graph);    
-    croppGraphData(timeIntervalList, dataList);
-  }
-
-  useEffect(()=>{
-    changeDataGraph();
-    if(currentGraph.name && !currentGraph.data.labels.length){
-      setIsLoaded(true);
-    }
-  }, [selectedTimeInterval, dataStep]); //after useEffect below
-
-  useEffect(() => {
-    if(isLoaded){
-      setIsLoaded(false);
-    }
-    const [start, stop] = dataProcess.getPastTime(1);
-    setSelectedTimeInterval([start, stop]);
-  }, []); //only once
-
+  
   const pickerHandler = (e) => {
     if(e.length === 2){
-      setSelectedTimeInterval(prev=>[e[0], e[1]]);
+      setSelectedTimeInterval((prev)=>{return [e[0].getTime()/1000, e[1].getTime()/1000]});
+      loadData();
     }
   }
-  if(!isLoaded){
-    <Loading/>
-  }else{
-    // console.log(currentGraph);
-    return (
-      <Row>
-        <Col md="12">
-          <Card>
-            <CardHeader>
-              <CardTitle tag="h5">{props.graph.name}</CardTitle>
-              <p className="card-category">{(props.graphRange===1)? '24 hours data':props.graphRange}</p>
-              {(error) // for the hide the time range
-                ? null
-                : <div style={{textAlign: 'center'}}>
-                    <ButtonGroup>
-                      <Button onClick={()=>changeDataStepHandler('hour')}>Hourly</Button>
-                      <Button onClick={()=>changeDataStepHandler('quarter')}>1/4 Hour</Button>
-                    </ButtonGroup>
-                  </div>
-              }
-            </CardHeader>
-            <CardBody>
-              {(error)
-                ? <ErrorSite/>
-                : <Line
-                    data={currentGraph.data}
-                    options={currentGraph.options}
-                    width={2}
-                    height={1}
-                  />
-              } 
-            </CardBody>
-            <CardFooter>
-              <hr />
-              <div className="stats">
-                {(typeof props.graphRange !== 'number')
-                  ? <DatePicker onErase={eraseData} onChange={pickerHandler}/>
-                  : null
-                }
-              </div>
-            </CardFooter>
-          </Card>
-        </Col>
-      </Row>
-    );
+
+  const loadData = async () => {
+    setLoaded(false);
+    let resObj = await getData(props.graphName, selectedTimeInterval)
+    setResponseObject(prev=>resObj)
+    let graphObject = getGraphObject(resObj, props.graphName, 'hour');
+    setCurrentGraph(graphObject)
+    setLoaded(true);
   }
+
+
+  useEffect(()=>{
+    loadData();
+  }, [])
+
+
+  return (
+    <Row>
+      <Col md="12">
+        <Card>
+          <CardHeader>
+            <CardTitle tag="h5">{props.graphName}</CardTitle>
+            <p className="card-category">{(props.graphRange===1)? '24 hours data':props.graphRange}</p>
+            {(error) // for the hide the time range
+              ? null
+              : <div style={{textAlign: 'center'}}>
+                  <ButtonGroup>
+                    <Button onClick={()=>changeDataGranularityHandler('hour')}>Hourly</Button>
+                    <Button onClick={()=>changeDataGranularityHandler('quarter')}>1/4 Hour</Button>
+                  </ButtonGroup>
+                </div>
+            }
+          </CardHeader>
+          {!loaded
+            ? <CardBody><Loading/></CardBody>
+            :
+              <CardBody>
+                {(error)
+                  ? <ErrorSite/>
+                  : <Line
+                      data={currentGraph.data}
+                      options={currentGraph.options}
+                      width={2}
+                      height={1}
+                    />
+                } 
+              </CardBody>
+          }
+          <CardFooter>
+            <hr />
+            <div className="stats">
+              {(typeof props.graphRange === 'number')
+                ? <DatePicker onErase={()=>{}} onChange={pickerHandler}/>
+                : null
+              }
+            </div>
+          </CardFooter>
+        </Card>
+      </Col>
+    </Row>
+  );
 
 }
 
