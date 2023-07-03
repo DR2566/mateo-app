@@ -3,7 +3,8 @@
 // import routes from 'routes';
 // import ErrorSite from './ErrorSite/ErrorSite';
 
-const sensors = ['Temperature', 'Humidity', 'Pressure', 'Uv'];
+// const sensors = ['Temperature', 'Humidity', 'Pressure', 'Uv'];
+const sensors = ['Temperature', 'Humidity', 'Pressure'];
 
 const gauches = { //these are the semi-circle graphs
   Temperature: { // current temperature 

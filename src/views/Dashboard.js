@@ -42,7 +42,7 @@ const Dashboard = (props) => {
         <GraphCard graphName='Temperature' graphRange={'24 hours'}  /> 
         <GraphCard graphName='Humidity' graphRange={'24 hours'}  /> 
         <GraphCard graphName='Pressure' graphRange={'24 hours'}  /> 
-        <GraphCard graphName='Uv' graphRange={'24 hours'}  /> 
+        {/* <GraphCard graphName='Uv' graphRange={'24 hours'}  />  */}
       </div>
     </>
   );
