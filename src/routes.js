@@ -33,17 +33,17 @@ var routes = [
     icon: "nc-icon nc-chart-bar-32",
     component: Pressure,
   },
-  {
-    path: "/uv",
-    name: "Uv",
-    icon: "nc-icon nc-chart-bar-32",
-    component: Uv,
-  },
-  {
-    path: "/test",
-    name: "DevOps",
-    icon: "nc-icon nc-settings",
-    component: DevOptions,
-  },
+  // {
+  //   path: "/uv",
+  //   name: "Uv",
+  //   icon: "nc-icon nc-chart-bar-32",
+  //   component: Uv,
+  // },
+  // {
+  //   path: "/test",
+  //   name: "DevOps",
+  //   icon: "nc-icon nc-settings",
+  //   component: DevOptions,
+  // },
 ];
 export default routes;
