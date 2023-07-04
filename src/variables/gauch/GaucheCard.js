@@ -66,7 +66,7 @@ const GaucheCard = (props) => {
         <CardFooter>
           <hr />
           <div className="stats">
-            <Button active block color="light" size="" onClick={props.onRefresh}>
+            <Button active block color="light" size="" onClick={loadData}>
               <i className="fas fa-sync-alt" /> Update Now
             </Button>
           </div>
