@@ -44,16 +44,16 @@ const GraphCard = (props) => {
     setLoaded(true);
   }
   
-  const pickerHandler = (e) => {
+  const pickerHandler = async(e) => {
     if(e.length === 2){
-      setSelectedTimeInterval((prev)=>{return [e[0].getTime()/1000, e[1].getTime()/1000]});
-      loadData();
+      await setSelectedTimeInterval((prev)=>{return [e[0].getTime()/1000, e[1].getTime()/1000]});
+      loadData([e[0].getTime()/1000, e[1].getTime()/1000]);
     }
   }
 
-  const loadData = async () => {
+  const loadData = async (timeInterval=false) => {
     setLoaded(false);
-    let resObj = await getData(props.graphName, selectedTimeInterval)
+    let resObj = await getData(props.graphName, timeInterval)
     setResponseObject(prev=>resObj)
     let graphObject = getGraphObject(resObj, props.graphName, 'hour');
     setCurrentGraph(graphObject)
@@ -62,7 +62,7 @@ const GraphCard = (props) => {
 
 
   useEffect(()=>{
-    loadData();
+    loadData(false);
   }, [])
 
 
