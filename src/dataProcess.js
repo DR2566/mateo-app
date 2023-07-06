@@ -26,7 +26,8 @@ const getGauchObject = async (gauchName) => {
   let gauch = gauches[gauchName]
   // define a lines that will get the max and min values and assign them to the gauches object
   let valueList = responseObject[gauchName].map(record=>record.value) // get list of records values
-  let currentValue = responseObject[gauchName][0].value
+  valueList = valueList.reverse()
+  let currentValue = valueList[0]
   let minValue = Math.min(...valueList)                                // min and max values of the time interval
   let maxValue = Math.max(...valueList) 
   gauch.currentValue = currentValue
